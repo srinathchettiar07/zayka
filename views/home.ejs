@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zayka : Taste of India</title>
+    <link rel="shortcut icon" href="images\favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="">
+    <header>
+        <nav>
+            <%- include('partials/header1.ejs') %>
+        </nav>
+    </header>
+    <div class="relative h-[77vh]">
+        <!-- Background Image (70% of screen height) -->
+        <img src="images\indian-food-feast-chicken-tikka-260nw-2262574417.jpg" alt="" class="w-full h-full object-cover">
+
+        <!-- Dark Overlay -->
+        <div class="absolute inset-0 bg-black rounded-3xl bg-opacity-50 text-gre"></div>
+
+        <!-- Centered Hero Text -->
+        <div class="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-4">
+            <h1 class="text-5xl font-bold"> <span class="auto-type text-red-500 text-5xl font-bold">  </span>
+            </h1>
+            <p class="mt-4 max-w-2xl text-lg">Think You Can cook? Spread your wings and fly high with Zayka.</p>
+            <div class="mt-6 flex space-x-4">
+                <a href="/user/dashboard"><button type="button" class="btn bg-red-500 hover:bg-red-800 text-white font-bold px-6 py-3 rounded-lg transition-all duration-300 hover:scale-110">Get Started -></button></a>
+                <button class="border border-white text-white px-6 py-3  hover:bg-white hover:text-black rounded-lg font-bold transition-all duration-300 hover:scale-110">Know About Us</button>
+            </div>
+        </div>
+    </div>
+
+    <section class="pb-10 text-center bg-gray-200">
+        <div class="container mx-auto">
+          <div class="flex flex-col items-center py-4">
+            <div class="max-w-2xl">
+              <h1 class="text-4xl font-semibold text-red-500">Explore Delicious Home-Cooked Meals!</h1>
+              <p class="text-lg text-gray-600 mt-4">
+                Discover and order fresh, homemade meals crafted by passionate home chefs near you. Savor the rich, authentic flavors made with love and the finest ingredients. Enjoy a delightful dining experience with meals  straight to your doorstep!
+              </p>
+              <div class="mt-6">
+                <a href="/user/auth" class="bg-red-500 text-white px-10 py-3 rounded-lg shadow-md hover:bg-red-700 transition-all duration-300 hover:scale-110">Start your journey</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="mid">
+        <div class="jumbo text-center font-3xl font-bold bg-gray-100 h-20 flex justify-center items-center shadow-md">
+            <h1 class="text-3xl">What We Offer?</h1>
+          </div>
+        <div class="h-[40vh] text-center px-4 flex flex-row justify-center items-center gap-20 mb-24 mt-10 py-16">
+            <div class="card border-2 border-black rounded-3xl transform transition-transform duration-200 hover:scale-110 hover:shadow-2xl" style="width: 20rem;">
+                <img src="images\food.jpg" class="card-img-top px-2 py-2 rounded-3xl" alt="...">
+                <div class="card-body">
+                  <h5 class="card-title text-xl font-semibold ">Tiffin Services</h5>
+                  <p class="card-text pb-4">Missing out on meals due to lack of homemade food? We got you.</p>
+                
+                </div>
+              </div>
+              <div class="card border-2 border-black rounded-3xl transform transition-transform duration-200 hover:scale-110 hover:shadow-2xl" style="width: 20rem;">
+                <img src="images\spice.png" class="card-img-top px-2 py-2 rounded-3xl " alt="...">
+                <div class="card-body">
+                  <h5 class="card-title text-xl font-semibold">Homemade Spices & Crafts</h5>
+                  <p class="card-text pb-4">Looking for homemade desi touch to your food? We got you.</p>
+                
+                </div>
+            </div>
+            <div class="card border-2 border-black rounded-3xl transform transition-transform duration-200 hover:scale-110 hover:shadow-2xl" style="width: 20rem;">
+                <img src="images\indian-family-dining-table_871881-6042.avif" class="card-img-top px-2 py-2 rounded-3xl object-fit" alt="...">
+                <div class="card-body">
+                  <h5 class="card-title text-xl font-semibold">Dine-at-home</h5>
+                  <p class="card-text pb-4">Miss eating at home?Join people who'd like to host you.</p>
+                
+                </div>
+              </div>
+        </div>
+      </div>
+      
+
+    <div class="container mx-auto my-10">
+        <div class="p-5 text-center bg-gray-100 rounded-lg shadow-md">
+          <h1 class="text-red-500 text-3xl font-bold">Delicious Homemade Meals, Just a Click Away!
+
+          </h1>
+          <p class="text-lg text-gray-700 mt-2">
+            Discover fresh, homemade meals prepared by talented home chefs in your neighborhood. 
+            Order your favorite dishes and enjoy the taste of home-cooked goodness, delivered to your doorstep.
+          </p>
+        </div>
+      </div>      
+ <div class="container mx-auto max-w-6xl px-4 py-10 ">
+        <div class="flex flex-col lg:flex-row items-center gap-10 py-10">
+            <div class="lg:w-2/3 text-center lg:text-left">
+                <h1 class="text-4xl font-bold leading-tight text-gray-900 mb-3">Contact Us</h1>
+                <p class="text-lg text-gray-700 max-w-xl">Got any questions or want to collaborate? We'd love to hear from you!</p>
+            </div>
+            <div class="w-full max-w-md">
+                <form class="p-6 border rounded-lg bg-white shadow-md" method="post">
+                    <div class="mb-4">
+                        <label for="email" class="block text-gray-700">Email Address</label>
+                        <input type="email" id="email" placeholder="name@example.com" class="w-full px-4 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" name="email">
+                    </div>
+                    <div class="mb-4">
+                        <label for="feedback" class="block text-gray-700">Your Queries</label>
+                        <input type="queries" id="" placeholder="Enter your queries" class="w-full px-4 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" name="query">
+                    </div>
+                    <button type="submit" class="submit w-full bg-red-600 text-white py-2 rounded-md hover:bg-red-700 transition">Submit</button>
+                    <hr class="my-4">
+                    <small class="text-gray-600">We will get back to you as soon as possible, Thanks for reaching out!</small>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
+    <script>
+        var typed = new Typed(".auto-type", {
+            strings: [" Zayka. ", " ज़ायका. ", "சுவை. ", " రుచి." , "ਜ਼ੈਕਾ."],
+            typeSpeed: 150,
+            backSpeed: 150,
+            loop: true,
+        });
+        (function(d, t) {
+          var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+          v.onload = function() {
+            window.voiceflow.chat.load({
+              verify: { projectID: '67d52585edd73be0e8d6ad16' },
+              url: 'https://general-runtime.voiceflow.com',
+              versionID: 'production',
+              voice: {
+                url: "https://runtime-api.voiceflow.com"
+              }
+            });
+          }
+          v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
+      })(document, 'script');
+            const bot = document.querySelector("#bot");
+        bot.addEventListener("click" , chatbot());
+    </script>
+    
+
+    <%- include('partials/footer.ejs') %>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+        }
+    </script>
+</head>
+<body class="bg-gray-800 text-white">
+    <div class="flex">
+        <!-- Hamburger Button -->
+        <button class="p-4 md:hidden" onclick="toggleMenu()">
+            <span class="text-2xl">☰</span>
+        </button>
+        
+        <!-- Sidebar -->
+        <div id="sidebar" class="w-64 bg-black p-4 min-h-screen md:block fixed md:relative -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
+            <div class="text-xl font-bold mb-6 flex justify-between">
+                <span>Your name</span>
+                <button class="md:hidden" onclick="toggleMenu()">✖</button>
+            </div>
+            <ul class="space-y-2">
+                <li><a class="flex items-center gap-2 p-2 rounded hover:bg-gray-700" href="/user/dashboard"><span>🏠</span> Dashboard</a></li>
+                <li><a class="flex items-center gap-2 p-2 rounded hover:bg-gray-700" href="/user/meals"><span>🍽️</span>Meals</a></li>
+                <li><a class="flex items-center gap-2 p-2 rounded hover:bg-gray-700" href="/user/mutualfunds"><span>🍱</span>Tiffin Services</a></li>
+                <li><a class="flex items-center gap-2 p-2 rounded hover:bg-gray-700" href="/seller/bonds"><span>🧂</span>Spices</a></li>
+                <li><a class="flex items-center gap-2 p-2 rounded hover:bg-gray-700" href="/seller/reports"><span>📊</span> Reports</a></li>
+                <li><a class="flex items-center gap-2 p-2 rounded hover:bg-gray-700" href="/user/recommendation"><span>🧩</span>Recommendation</a></li>
+            </ul>
+            
+            <h6 class="mt-6 text-gray-400 text-sm uppercase">Saved Reports</h6>
+            <ul class="space-y-2 mt-2">
+                <li><a class="flex items-center gap-2 p-2 rounded hover:bg-gray-700" href="/calculator"><span>📑</span> Cart</a></li>
+                <li><a class="flex items-center gap-2 p-2 rounded hover:bg-gray-700" href="/fd"><span>📑</span> orders</a></li>
+                <li><a class="flex items-center gap-2 p-2 rounded hover:bg-gray-700" href="#"><span>📑</span> </a></li>
+                <li><a class="flex items-center gap-2 p-2 rounded hover:bg-gray-700" href="#"><span>📑</span> News</a></li>
+            </ul>
+
+            <hr class="my-4 border-gray-700">
+
+            <ul class="space-y-2">
+                <li><a class="flex items-center gap-2 p-2 rounded hover:bg-gray-700" href="#"><span>⚙️</span> Settings</a></li>
+                <li><a class="flex items-center gap-2 p-2 rounded hover:bg-gray-700" href="/logout"><span>🚪</span> Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
