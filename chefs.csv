@@ -1,0 +1,10 @@
+name,image_url,description,cuisine,place,delivery_time,stars
+Rohit Verma,images/chef1.jpg,"Specialist in North Indian cuisine, known for spicy curries.",North Indian,Delhi,30,4.5
+Ananya Sharma,images/chef2.jpg,"Expert in healthy vegetarian dishes with a modern twist.",Vegetarian,Mumbai,25,4.2
+Kabir Reddy,images/chef3.jpg,"Fusion chef blending Asian and European flavors.",Fusion,Bangalore,35,4.8
+Simran Kaur,images/chef4.jpg,"Renowned for authentic Punjabi dishes and desserts.",Punjabi,Amritsar,40,4.6
+Ayaan Khan,images/chef5.jpg,"Innovative South Indian dishes with street food vibes.",South Indian,Hyderabad,20,4.4
+Nisha Patel,images/chef6.jpg,"Dessert queen known for artisanal pastries and cakes.",Bakery,Ahmedabad,45,4.9
+Vikram Iyer,images/chef7.jpg,"Specialist in Biryani and Mughlai delights.",Mughlai,Lucknow,50,4.7
+Meera Banerjee,images/chef8.jpg,"Expert in Bengali fish dishes and traditional sweets.",Bengali,Kolkata,30,4.3
+Arjun Naik,images/chef9.jpg,"Goan flavors and seafood specialist with a beach vibe.",Goan,Goa,35,4.6

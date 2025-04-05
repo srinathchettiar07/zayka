@@ -41,7 +41,12 @@ app.use(express.static("public"));
 app.set("view engine", "ejs");
 
 
-const time = [{type:"breakfast" , imageUrl :"images/morning.jpg" } ,{type:"lunch" , imageUrl :"images/afternoon.jpeg" } , {type:"snacks" , imageUrl :"images/evening.jpeg" } , {type:"dinner" , imageUrl :"images/night.avif" } ]
+const time = [
+  { type: "breakfast", imageUrl: "/images/morning.jpg" },
+  { type: "lunch", imageUrl: "/images/afternoon.jpeg" },
+  { type: "snacks", imageUrl: "/images/evening.jpeg" },
+  { type: "dinner", imageUrl: "/images/night.avif" }
+];
 
 app.get('/',(req , res)=>{
     res.render("home.ejs")
@@ -49,6 +54,10 @@ app.get('/',(req , res)=>{
 
 app.get("/login" , (req , res)=>{
     res.render("login.ejs")
+})
+
+app.get("/register" , (req , res)=>{
+    res.render("register.ejs")
 })
 
 app.get("/logout", (req, res) => {
@@ -166,14 +175,15 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, cb) => {
       try {
-        console.log(profile);
+        console.log(profile.picture);
         const result = await db.query("SELECT * FROM users WHERE email = $1", [
           profile.email,
+  
         ]);
         if (result.rows.length === 0) {
           const newUser = await db.query(
-            "INSERT INTO users (email, password) VALUES ($1, $2)",
-            [profile.email, "google"]
+            "INSERT INTO users (email, password , image , fname) VALUES ($1, $2 , $3 , $4)",
+            [profile.email, "google" , profile.picture , profile.given_name]
           );
           return cb(null, newUser.rows[0]);
         } else {
@@ -198,11 +208,16 @@ passport.deserializeUser((user, cb) => {
 app.get('/user/dashboard',ensureAuthenticated , async (req , res)=>{
     
     try {
+        const name  = await db.query("SELECT * FROM users where id = $1" , [req.user.id] );
+        const rows = name.rows[0]
+        console.log(rows.fname)
+        
         const result = await db.query("SELECT * FROM recipes");
         const data = result.rows;
         res.render("user.ejs" , {
             foods:data,
-            
+            user:rows
+    
         });
     } catch (error) {
         console.log(error)
@@ -211,18 +226,20 @@ app.get('/user/dashboard',ensureAuthenticated , async (req , res)=>{
 })
 
 
-app.post('/user/dashboard', async (req , res)=>{
+app.post('/user/dashboard', ensureAuthenticated , async (req , res)=>{
     try {
+      const newName  = await db.query("SELECT * FROM users where id = $1" , [req.user.id] );
+      const rows = newName.rows[0]
         const name = req.body.name;
-        console.log(name)
+
         const result = await db.query(
             "SELECT * FROM recipes WHERE name ILIKE $1",
             [`%${name}%`] // Adding wildcards directly in the parameter
         );
         const data = result.rows;
-        console.log(data)
         res.render("user.ejs" , {
-            foods:data
+            foods:data,
+            user:rows
         });
     } catch (error) {
         console.log(error)
@@ -233,11 +250,16 @@ app.post('/user/dashboard', async (req , res)=>{
 
 app.get('/user/meals' ,ensureAuthenticated, async (req , res)=>{
     try {
+       const chefs = await db.query("SELECT * FROM cheefs ");
+      const name  = await db.query("SELECT * FROM users where id = $1" , [req.user.id] );
+        const rows = name.rows[0]
         const result = await db.query("SELECT * FROM chefs");
         const data = result.rows;
        res.render('meals.ejs' , {
         chefs:data,
-        time:time
+        time:time,
+        user:rows,
+        names:chefs.rows
        }) 
     } catch (error) {
         console.log(error)

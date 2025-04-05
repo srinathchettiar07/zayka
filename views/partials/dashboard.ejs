@@ -20,15 +20,18 @@
         
         <!-- Sidebar -->
         <div id="sidebar" class="w-64 bg-black p-4 min-h-screen md:block fixed md:relative -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
-            <div class="text-xl font-bold mb-6 flex justify-between">
-                <span>Your name</span>
+            <div class="text-xl font-bold mb-6 flex justify-between items-center">
+                <span><%= user.fname %></span>
+                <div class="w-12 h-12 rounded-full overflow-hidden border border-gray-300">
+                    <img src="<%=user.image %>" alt="Profile" class="w-full h-full object-cover">
+                  </div>
                 <button class="md:hidden" onclick="toggleMenu()">✖</button>
             </div>
             <ul class="space-y-2">
                 <li><a class="flex items-center gap-2 p-2 rounded hover:bg-gray-700" href="/user/dashboard"><span>🏠</span> Dashboard</a></li>
                 <li><a class="flex items-center gap-2 p-2 rounded hover:bg-gray-700" href="/user/meals"><span>🍽️</span>Meals</a></li>
                 <li><a class="flex items-center gap-2 p-2 rounded hover:bg-gray-700" href="/user/mutualfunds"><span>🍱</span>Tiffin Services</a></li>
-                <li><a class="flex items-center gap-2 p-2 rounded hover:bg-gray-700" href="/seller/bonds"><span>🧂</span>Spices</a></li>
+                <li><a class="flex items-center gap-2 p-2 rounded hover:bg-gray-700" href="/user/spices"><span>🧂</span>Spices</a></li>
                 <li><a class="flex items-center gap-2 p-2 rounded hover:bg-gray-700" href="/seller/reports"><span>📊</span> Reports</a></li>
                 <li><a class="flex items-center gap-2 p-2 rounded hover:bg-gray-700" href="/user/recommendation"><span>🧩</span>Recommendation</a></li>
             </ul>
