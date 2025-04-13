@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - Zayka</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="flex min-h-screen">
+        <%- include('partials/dashboard.ejs', { user: user }) %>
+
+        <div class="flex-1 p-6">
+            <h1 class="text-3xl font-bold mb-8 text-gray-800">My Orders</h1>
+
+            <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+                <div class="border-b px-6 py-4">
+                    <h2 class="text-xl font-semibold">Order History</h2>
+                </div>
+                
+                <% if(locals.orders && orders.length > 0) { %>
+                    <div class="divide-y">
+                        <% orders.forEach(order => { %>
+                            <div class="p-6">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="text-lg font-semibold">Order #<%= order.id %></h3>
+                                        <p class="text-sm text-gray-500">
+                                            Placed on <%= new Date(order.order_date).toLocaleDateString() %>
+                                        </p>
+                                    </div>
+                                    <span class="px-3 py-1 text-sm rounded-full <%= 
+                                        order.status === 'completed' ? 'bg-green-100 text-green-800' : 
+                                        order.status === 'processing' ? 'bg-blue-100 text-blue-800' : 
+                                        order.status === 'shipped' ? 'bg-purple-100 text-purple-800' : 
+                                        'bg-yellow-100 text-yellow-800' 
+                                    %>">
+                                        <%= order.status.charAt(0).toUpperCase() + order.status.slice(1) %>
+                                    </span>
+                                </div>
+                                
+                                <div class="border rounded-lg overflow-hidden mb-4">
+                                    <table class="w-full">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-200">
+                                            <% order.items.forEach(item => { %>
+                                                <tr>
+                                                    <td class="px-4 py-3">
+                                                        <div class="flex items-center">
+                                                            <div class="h-10 w-10 flex-shrink-0">
+                                                                <img class="h-10 w-10 rounded-md object-cover" src="<%= item.image_url %>" alt="<%= item.name %>">
+                                                            </div>
+                                                            <div class="ml-4">
+                                                                <div class="text-sm font-medium text-gray-900"><%= item.name %></div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-3 text-sm text-gray-500"><%= item.quantity %></td>
+                                                    <td class="px-4 py-3 text-sm text-gray-500">₹<%= item.price %></td>
+                                                    <td class="px-4 py-3 text-sm text-gray-500">₹<%= item.subtotal %></td>
+                                                </tr>
+                                            <% }) %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <div class="flex justify-between border-t pt-4">
+                                    <div>
+                                        <p class="text-sm text-gray-600">Shipping: ₹<%= order.shipping_fee %></p>
+                                        <p class="text-sm text-gray-600">Tax: ₹<%= order.tax_amount %></p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-lg font-semibold">Total: ₹<%= order.total_amount %></p>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }) %>
+                    </div>
+                <% } else { %>
+                    <div class="p-8 text-center">
+                        <div class="text-gray-400 mb-4">
+                            <i class="fas fa-shopping-bag text-5xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-500 mb-2">No orders yet</h3>
+                        <p class="text-gray-400 mb-4">Looks like you haven't placed any orders yet.</p>
+                        <a href="/user/spices" class="inline-block bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600">
+                            Browse Products
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

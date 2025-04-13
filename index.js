@@ -35,6 +35,7 @@ app.use(passport.session());
 
 
 app.use(bodyParser.urlencoded({extended:true}));
+app.use(express.json());
 app.use(express.static("public"));
 
 
@@ -265,6 +266,337 @@ app.get('/user/meals' ,ensureAuthenticated, async (req , res)=>{
         console.log(error)
     }
 })
+
+// Spices Routes
+app.get('/user/spices', ensureAuthenticated, async (req, res) => {
+    try {
+        const user = await db.query("SELECT * FROM users WHERE id = $1", [req.user.id]);
+        const products = await db.query("SELECT * FROM homemade_products ORDER BY created_at DESC");
+        res.render('spices.ejs', {
+            user: user.rows[0],
+            spices: products.rows
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error');
+    }
+});
+
+// Cart Routes
+app.get('/cart', ensureAuthenticated, async (req, res) => {
+    try {
+        const user = await db.query("SELECT * FROM users WHERE id = $1", [req.user.id]);
+        const cartItems = await db.query(`
+            SELECT ci.id, ci.quantity, hp.* 
+            FROM cart_items ci 
+            JOIN homemade_products hp ON ci.product_id = hp.id 
+            WHERE ci.user_id = $1
+        `, [req.user.id]);
+
+        let subtotal = 0;
+        cartItems.rows.forEach(item => {
+            subtotal += item.price * item.quantity;
+        });
+
+        const shipping = 50;
+        const tax = subtotal * 0.18; // 18% tax
+        const total = subtotal + shipping + tax;
+
+        res.render('cart.ejs', {
+            user: user.rows[0],
+            cartItems: cartItems.rows,
+            subtotal: subtotal.toFixed(2),
+            shipping: shipping.toFixed(2),
+            tax: tax.toFixed(2),
+            total: total.toFixed(2)
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error');
+    }
+});
+
+app.post('/cart/add', ensureAuthenticated, async (req, res) => {
+    try {
+        const productId = parseInt(req.body.productId, 10);
+        const quantity = parseInt(req.body.quantity, 10) || 1;
+        
+        if (isNaN(productId)) {
+            return res.status(400).json({ success: false, error: 'Invalid product ID' });
+        }
+
+        // Check if item already exists in cart
+        const existingItem = await db.query(
+            "SELECT * FROM cart_items WHERE user_id = $1 AND product_id = $2",
+            [req.user.id, productId]
+        );
+
+        if (existingItem.rows.length > 0) {
+            // Update quantity if item exists
+            await db.query(
+                "UPDATE cart_items SET quantity = quantity + $1 WHERE user_id = $2 AND product_id = $3",
+                [quantity, req.user.id, productId]
+            );
+        } else {
+            // Add new item if it doesn't exist
+            await db.query(
+                "INSERT INTO cart_items (user_id, product_id, quantity) VALUES ($1, $2, $3)",
+                [req.user.id, productId, quantity]
+            );
+        }
+
+        // Calculate updated cart totals
+        const cartItems = await db.query(`
+            SELECT ci.quantity, hp.price 
+            FROM cart_items ci 
+            JOIN homemade_products hp ON ci.product_id = hp.id 
+            WHERE ci.user_id = $1
+        `, [req.user.id]);
+
+        let subtotal = 0;
+        cartItems.rows.forEach(item => {
+            subtotal += item.price * item.quantity;
+        });
+
+        const total = subtotal + 50 + (subtotal * 0.18); // Adding shipping (50) and tax (18%)
+
+        res.json({
+            success: true,
+            subtotal: subtotal.toFixed(2),
+            total: total.toFixed(2)
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Server error' });
+    }
+});
+
+app.post('/cart/update', ensureAuthenticated, async (req, res) => {
+    try {
+        const { itemId, action } = req.body;
+        
+        // Get current quantity
+        const currentItem = await db.query(
+            "SELECT ci.quantity, hp.price FROM cart_items ci JOIN homemade_products hp ON ci.product_id = hp.id WHERE ci.id = $1 AND ci.user_id = $2",
+            [itemId, req.user.id]
+        );
+
+        if (currentItem.rows.length === 0) {
+            return res.status(404).json({ success: false, error: 'Item not found' });
+        }
+
+        let newQuantity = currentItem.rows[0].quantity;
+        if (action === 'increase') {
+            newQuantity += 1;
+        } else if (action === 'decrease' && newQuantity > 1) {
+            newQuantity -= 1;
+        }
+
+        // Update quantity
+        await db.query(
+            "UPDATE cart_items SET quantity = $1 WHERE id = $2 AND user_id = $3",
+            [newQuantity, itemId, req.user.id]
+        );
+
+        // Calculate new totals
+        const cartItems = await db.query(`
+            SELECT ci.quantity, hp.price 
+            FROM cart_items ci 
+            JOIN homemade_products hp ON ci.product_id = hp.id 
+            WHERE ci.user_id = $1
+        `, [req.user.id]);
+
+        let subtotal = 0;
+        cartItems.rows.forEach(item => {
+            subtotal += item.price * item.quantity;
+        });
+
+        const total = subtotal + 50 + (subtotal * 0.18); // Adding shipping (50) and tax (18%)
+
+        res.json({
+            success: true,
+            quantity: newQuantity,
+            subtotal: subtotal.toFixed(2),
+            total: total.toFixed(2)
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Server error' });
+    }
+});
+
+app.post('/cart/remove', ensureAuthenticated, async (req, res) => {
+    try {
+        const { itemId } = req.body;
+
+        // Remove item
+        await db.query(
+            "DELETE FROM cart_items WHERE id = $1 AND user_id = $2",
+            [itemId, req.user.id]
+        );
+
+        // Calculate new totals
+        const cartItems = await db.query(`
+            SELECT ci.quantity, hp.price 
+            FROM cart_items ci 
+            JOIN homemade_products hp ON ci.product_id = hp.id 
+            WHERE ci.user_id = $1
+        `, [req.user.id]);
+
+        let subtotal = 0;
+        cartItems.rows.forEach(item => {
+            subtotal += item.price * item.quantity;
+        });
+
+        const total = subtotal + 50 + (subtotal * 0.18); // Adding shipping (50) and tax (18%)
+
+        res.json({
+            success: true,
+            subtotal: subtotal.toFixed(2),
+            total: total.toFixed(2)
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Server error' });
+    }
+});
+
+// Checkout route
+app.get('/checkout', ensureAuthenticated, async (req, res) => {
+    try {
+        const user = await db.query("SELECT * FROM users WHERE id = $1", [req.user.id]);
+        const cartItems = await db.query(`
+            SELECT ci.id, ci.quantity, hp.* 
+            FROM cart_items ci 
+            JOIN homemade_products hp ON ci.product_id = hp.id 
+            WHERE ci.user_id = $1
+        `, [req.user.id]);
+
+        if (cartItems.rows.length === 0) {
+            return res.redirect('/cart');
+        }
+
+        let subtotal = 0;
+        cartItems.rows.forEach(item => {
+            subtotal += item.price * item.quantity;
+        });
+
+        const shipping = 50;
+        const tax = subtotal * 0.18; // 18% tax
+        const total = subtotal + shipping + tax;
+
+        res.render('checkout.ejs', {
+            user: user.rows[0],
+            cartItems: cartItems.rows,
+            subtotal: subtotal.toFixed(2),
+            shipping: shipping.toFixed(2),
+            tax: tax.toFixed(2),
+            total: total.toFixed(2)
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error');
+    }
+});
+
+// Process order
+app.post('/checkout/complete', ensureAuthenticated, async (req, res) => {
+    try {
+        // Start transaction
+        await db.query('BEGIN');
+
+        // Get cart items
+        const cartItems = await db.query(`
+            SELECT ci.id, ci.quantity, hp.id as product_id, hp.price, hp.name, hp.image_url
+            FROM cart_items ci 
+            JOIN homemade_products hp ON ci.product_id = hp.id 
+            WHERE ci.user_id = $1
+        `, [req.user.id]);
+
+        if (cartItems.rows.length === 0) {
+            await db.query('ROLLBACK');
+            return res.status(400).json({ success: false, error: 'Cart is empty' });
+        }
+
+        // Calculate totals
+        let subtotal = 0;
+        cartItems.rows.forEach(item => {
+            subtotal += item.price * item.quantity;
+        });
+
+        const shipping = 50;
+        const tax = subtotal * 0.18; // 18% tax
+        const total = subtotal + shipping + tax;
+
+        // Create order
+        const orderResult = await db.query(
+            "INSERT INTO orders (user_id, total_amount, shipping_fee, tax_amount) VALUES ($1, $2, $3, $4) RETURNING *",
+            [req.user.id, total, shipping, tax]
+        );
+        
+        const newOrder = orderResult.rows[0];
+
+        // Add order items
+        for (const item of cartItems.rows) {
+            const itemSubtotal = item.price * item.quantity;
+            await db.query(
+                "INSERT INTO order_items (order_id, product_id, quantity, price, subtotal) VALUES ($1, $2, $3, $4, $5)",
+                [newOrder.id, item.product_id, item.quantity, item.price, itemSubtotal]
+            );
+        }
+
+        // Clear cart
+        await db.query("DELETE FROM cart_items WHERE user_id = $1", [req.user.id]);
+
+        // Commit transaction
+        await db.query('COMMIT');
+
+        return res.json({ success: true, orderId: newOrder.id });
+    } catch (error) {
+        await db.query('ROLLBACK');
+        console.error(error);
+        return res.status(500).json({ success: false, error: 'Server error' });
+    }
+});
+
+// Orders route
+app.get('/orders', ensureAuthenticated, async (req, res) => {
+    try {
+        const user = await db.query("SELECT * FROM users WHERE id = $1", [req.user.id]);
+        
+        // Get all orders for the user
+        const ordersResult = await db.query(`
+            SELECT * FROM orders 
+            WHERE user_id = $1 
+            ORDER BY order_date DESC
+        `, [req.user.id]);
+        
+        const orders = [];
+        
+        // For each order, get its items
+        for (const order of ordersResult.rows) {
+            const itemsResult = await db.query(`
+                SELECT oi.*, hp.name, hp.image_url 
+                FROM order_items oi
+                JOIN homemade_products hp ON oi.product_id = hp.id
+                WHERE oi.order_id = $1
+            `, [order.id]);
+            
+            orders.push({
+                ...order,
+                items: itemsResult.rows
+            });
+        }
+        
+        res.render('orders.ejs', {
+            user: user.rows[0],
+            orders: orders
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error');
+    }
+});
 
 app.listen(port , ()=>{
     console.log(`server hosted on ${port}`);

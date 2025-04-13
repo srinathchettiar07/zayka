@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homemade Products - Zayka</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="flex min-h-screen">
+        <%- include('partials/dashboard.ejs', { user: user }) %>
+
+        <div class="flex-1 p-6">
+            <h1 class="text-3xl font-bold mb-8 text-gray-800">Homemade Products</h1>
+
+            <!-- Search and Filter Section -->
+            <div class="flex flex-wrap gap-4 mb-8">
+                <div class="flex-1 max-w-md">
+                    <div class="relative">
+                        <input type="text" placeholder="Search products..." class="w-full pl-10 pr-4 py-2 border rounded-lg">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                </div>
+                <select class="border rounded-lg px-4 py-2">
+                    <option value="">All Categories</option>
+                    <option value="spices">Spices</option>
+                    <option value="pickles">Pickles</option>
+                    <option value="snacks">Snacks</option>
+                    <option value="sweets">Sweets</option>
+                    <option value="ready-to-cook">Ready to Cook</option>
+                </select>
+                <select class="border rounded-lg px-4 py-2">
+                    <option value="">Sort by</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="rating">Rating</option>
+                    <option value="popular">Most Popular</option>
+                </select>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <% if(locals.spices && spices.length > 0) { %>
+                    <% spices.forEach(product => { %>
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                            <img src="<%= product.image_url %>" alt="<%= product.name %>" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-800"><%= product.name %></h3>
+                                        <span class="inline-block px-2 py-1 text-xs font-semibold text-white bg-red-500 rounded-full mb-2">
+                                            <%= product.category.charAt(0).toUpperCase() + product.category.slice(1) %>
+                                        </span>
+                                    </div>
+                                    <span class="text-lg font-bold text-green-600">₹<%= product.price %></span>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-4"><%= product.description %></p>
+                                <div class="text-sm text-gray-600 mb-4">
+                                    <p><strong>Ingredients:</strong> <%= product.ingredients.join(', ') %></p>
+                                    <p><strong>Shelf Life:</strong> <%= product.shelf_life %></p>
+                                    <p><strong>Stock:</strong> <%= product.stock_quantity %> units</p>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <span class="text-yellow-400">★</span>
+                                        <span class="ml-1 text-sm text-gray-600"><%= product.rating %> (<%= product.reviews %> reviews)</span>
+                                    </div>
+                                    <button onclick="addToCart(parseInt('<%= product.id %>'))" 
+                                            class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
+                                        Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="col-span-full text-center text-gray-500">
+                        <p>No products available at the moment.</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function addToCart(productId) {
+        fetch('/cart/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                productId: productId,
+                quantity: 1
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                alert('Added to cart successfully!');
+            } else {
+                alert('Failed to add to cart. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        });
+    }
+
+    // Search and filter functionality
+    const searchInput = document.querySelector('input[type="text"]');
+    const categorySelect = document.querySelector('select');
+    const productsGrid = document.querySelector('.grid');
+
+    function filterProducts() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const selectedCategory = categorySelect.value;
+        const products = document.querySelectorAll('.grid > div');
+
+        products.forEach(product => {
+            const name = product.querySelector('h3').textContent.toLowerCase();
+            const category = product.querySelector('.bg-red-500').textContent.toLowerCase();
+            const matchesSearch = name.includes(searchTerm);
+            const matchesCategory = !selectedCategory || category === selectedCategory;
+
+            product.style.display = matchesSearch && matchesCategory ? 'block' : 'none';
+        });
+    }
+
+    searchInput.addEventListener('input', filterProducts);
+    categorySelect.addEventListener('change', filterProducts);
+    </script>
+</body>
+</html> 

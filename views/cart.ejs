@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - Zayka</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="flex min-h-screen">
+        <%- include('partials/dashboard.ejs', { user: user }) %>
+
+        <div class="flex-1 p-6">
+            <h1 class="text-3xl font-bold mb-8 text-gray-800">Shopping Cart</h1>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- Cart Items -->
+                <div class="lg:w-2/3">
+                    <% if(locals.cartItems && cartItems.length > 0) { %>
+                        <div class="bg-white rounded-lg shadow-md">
+                            <% cartItems.forEach(item => { %>
+                                <div class="flex items-center p-6 border-b last:border-b-0" id="cart-item-<%= item.id %>">
+                                    <img src="<%= item.image_url %>" alt="<%= item.name %>" class="w-24 h-24 object-cover rounded-lg">
+                                    <div class="flex-1 ml-6">
+                                        <h3 class="text-lg font-semibold text-gray-800"><%= item.name %></h3>
+                                        <p class="text-gray-600 text-sm"><%= item.description %></p>
+                                        <div class="flex items-center mt-4">
+                                            <button onclick="updateQuantity('<%= item.id %>', 'decrease')" 
+                                                    class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
+                                                -
+                                            </button>
+                                            <span class="mx-4" id="quantity-<%= item.id %>"><%= item.quantity %></span>
+                                            <button onclick="updateQuantity('<%= item.id %>', 'increase')"
+                                                    class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
+                                                +
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-lg font-bold text-green-600">₹<%= item.price %></p>
+                                        <button onclick="removeFromCart('<%= item.id %>')"
+                                                class="text-red-500 hover:text-red-700 mt-2">
+                                            Remove
+                                        </button>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        </div>
+                    <% } else { %>
+                        <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                            <p class="text-gray-500">Your cart is empty.</p>
+                            <a href="/user/spices" class="inline-block mt-4 bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600">
+                                Browse Spices
+                            </a>
+                        </div>
+                    <% } %>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="lg:w-1/3">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h2 class="text-lg font-semibold mb-4">Order Summary</h2>
+                        <div class="space-y-3 mb-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Subtotal</span>
+                                <span id="subtotal">₹<%= locals.subtotal || 0 %></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Shipping</span>
+                                <span>₹<%= locals.shipping || 50 %></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Tax</span>
+                                <span>₹<%= locals.tax || 0 %></span>
+                            </div>
+                            <div class="border-t pt-3 mt-3">
+                                <div class="flex justify-between font-semibold">
+                                    <span>Total</span>
+                                    <span id="total">₹<%= locals.total || 0 %></span>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="proceedToCheckout()"
+                                class="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition-colors">
+                            Proceed to Checkout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function updateQuantity(itemId, action) {
+        fetch('/cart/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                itemId: itemId,
+                action: action
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                document.getElementById(`quantity-${itemId}`).textContent = data.quantity;
+                updateOrderSummary(data.subtotal, data.total);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to update quantity. Please try again.');
+        });
+    }
+
+    function removeFromCart(itemId) {
+        if(confirm('Are you sure you want to remove this item?')) {
+            fetch('/cart/remove', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    itemId: itemId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    document.getElementById(`cart-item-${itemId}`).remove();
+                    updateOrderSummary(data.subtotal, data.total);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to remove item. Please try again.');
+            });
+        }
+    }
+
+    function updateOrderSummary(subtotal, total) {
+        document.getElementById('subtotal').textContent = `₹${subtotal}`;
+        document.getElementById('total').textContent = `₹${total}`;
+    }
+
+    function proceedToCheckout() {
+        window.location.href = '/checkout';
+    }
+    </script>
+</body>
+</html> 
