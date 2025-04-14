@@ -94,9 +94,9 @@ INSERT INTO homemade_products (name, description, price, image_url, category, st
 
 -- Ready-to-Cook Category
 INSERT INTO homemade_products (name, description, price, image_url, category, stock_quantity, ingredients, shelf_life, is_vegetarian) VALUES
-('Instant Dhokla Mix', 'Quick and easy mix for soft and spongy dhoklas', 149.00, 'https://www.vegrecipesofindia.com/wp-content/uploads/2009/08/instant-dhokla-recipe.jpg', 'ready-to-cook', 70, ARRAY['Gram flour', 'Spices', 'Citric acid', 'Salt'], '6 months', true),
-('Pav Bhaji Masala Mix', 'Special blend for authentic street-style pav bhaji', 199.00, 'https://www.vegrecipesofindia.com/wp-content/uploads/2014/06/pav-bhaji-masala-powder-recipe.jpg', 'ready-to-cook', 60, ARRAY['Mixed spices', 'Dried vegetables', 'Herbs'], '6 months', true),
-('Instant Idli Mix', 'Traditional south Indian idli batter mix', 129.00, 'https://www.vegrecipesofindia.com/wp-content/uploads/2013/03/instant-rava-idli-recipe.jpg', 'ready-to-cook', 80, ARRAY['Rice flour', 'Urad dal flour', 'Salt'], '4 months', true);
+('Instant Dhokla Mix', 'Quick and easy mix for soft and spongy dhoklas', 149.00, 'https://rakskitchen.net/wp-content/uploads/2011/09/khaman-besan.jpg', 'ready-to-cook', 70, ARRAY['Gram flour', 'Spices', 'Citric acid', 'Salt'], '6 months', true),
+('Pav Bhaji Masala Mix', 'Special blend for authentic street-style pav bhaji', 199.00, 'https://vegecravings.com/wp-content/uploads/2016/10/Pav-Bhaji-Recipe-Step-By-Step-Instructions-9.jpg', 'ready-to-cook', 60, ARRAY['Mixed spices', 'Dried vegetables', 'Herbs'], '6 months', true),
+('Instant Idli Mix', 'Traditional south Indian idli batter mix', 129.00, 'https://foodlore.in/cdn/shop/files/Rava-Idli-using-Instant-Mix1S.jpg?v=1700047650&width=1445', 'ready-to-cook', 80, ARRAY['Rice flour', 'Urad dal flour', 'Salt'], '4 months', true);
 
 -- Create orders table
 CREATE TABLE orders (
