@@ -98,6 +98,8 @@ INSERT INTO homemade_products (name, description, price, image_url, category, st
 ('Pav Bhaji Masala Mix', 'Special blend for authentic street-style pav bhaji', 199.00, 'https://vegecravings.com/wp-content/uploads/2016/10/Pav-Bhaji-Recipe-Step-By-Step-Instructions-9.jpg', 'ready-to-cook', 60, ARRAY['Mixed spices', 'Dried vegetables', 'Herbs'], '6 months', true),
 ('Instant Idli Mix', 'Traditional south Indian idli batter mix', 129.00, 'https://foodlore.in/cdn/shop/files/Rava-Idli-using-Instant-Mix1S.jpg?v=1700047650&width=1445', 'ready-to-cook', 80, ARRAY['Rice flour', 'Urad dal flour', 'Salt'], '4 months', true);
 
+-- DROP TABLE orders CASCADE;
+
 -- Create orders table
 CREATE TABLE orders (
     id SERIAL PRIMARY KEY,
@@ -106,7 +108,8 @@ CREATE TABLE orders (
     shipping_fee DECIMAL(10,2) NOT NULL DEFAULT 50.00,
     tax_amount DECIMAL(10,2) NOT NULL,
     status VARCHAR(50) NOT NULL DEFAULT 'pending',
-    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    dabbawala_id INTEGER REFERENCES dabbawalas(id)
 );
 
 -- Create order items table
@@ -119,3 +122,23 @@ CREATE TABLE order_items (
     subtotal DECIMAL(10,2) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Create dabbawalas table for delivery personnel
+CREATE TABLE dabbawalas (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    image VARCHAR(255) DEFAULT '/images/dabbawala-default.jpg',
+    phone VARCHAR(15),
+    experience INTEGER DEFAULT 0,
+    rating DECIMAL(3,2) DEFAULT 4.5,
+    reviews INTEGER DEFAULT 0,
+    available BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert sample dabbawala data
+INSERT INTO dabbawalas (name, image, phone, experience, rating, reviews) VALUES
+('Ramesh Gaikwad', '/images/dabbawala1.jpg', '+91-9876543210', 15, 4.9, 1250),
+('Suresh Patil', '/images/dabbawala2.jpg', '+91-9876543211', 8, 4.7, 870),
+('Vijay Deshmukh', '/images/dabbawala3.jpg', '+91-9876543212', 12, 4.8, 1120),
+('Ganesh Jadhav', '/images/dabbawala4.jpg', '+91-9876543213', 5, 4.6, 520);

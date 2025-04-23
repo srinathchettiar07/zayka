@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Tracking - Zayka</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <style>
+        .map-container {
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="flex min-h-screen">
+        <%- include('partials/dashboard.ejs', { user: user }) %>
+
+        <div class="flex-1 p-6">
+            <h1 class="text-3xl font-bold mb-8 text-gray-800">Track Your Order</h1>
+
+            <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+                <div class="border-b px-6 py-4 flex justify-between items-center">
+                    <h2 class="text-xl font-semibold">Order #<%= order.id %></h2>
+                    <span class="px-3 py-1 text-sm rounded-full <%= 
+                        order.status === 'completed' ? 'bg-green-100 text-green-800' : 
+                        order.status === 'processing' ? 'bg-blue-100 text-blue-800' : 
+                        order.status === 'shipped' ? 'bg-purple-100 text-purple-800' : 
+                        'bg-yellow-100 text-yellow-800' 
+                    %>">
+                        <%= order.status.charAt(0).toUpperCase() + order.status.slice(1) %>
+                    </span>
+                </div>
+                
+                <!-- Order Progress -->
+                <div class="p-6">
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold mb-4">Delivery Status</h3>
+                        <div class="relative">
+                            <div class="absolute inset-0 flex items-center">
+                                <div class="h-1 w-full bg-gray-200 rounded"></div>
+                            </div>
+                            <div class="relative flex justify-between">
+                                <div class="text-center">
+                                    <div class="w-10 h-10 mx-auto rounded-full <%= order.status !== 'pending' ? 'bg-green-500' : 'bg-gray-200' %> flex items-center justify-center">
+                                        <i class="fas fa-check text-white <%= order.status !== 'pending' ? '' : 'opacity-0' %>"></i>
+                                    </div>
+                                    <div class="text-xs mt-1">Confirmed</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="w-10 h-10 mx-auto rounded-full <%= order.status === 'processing' || order.status === 'shipped' || order.status === 'completed' ? 'bg-green-500' : 'bg-gray-200' %> flex items-center justify-center">
+                                        <i class="fas fa-utensils text-white"></i>
+                                    </div>
+                                    <div class="text-xs mt-1">Preparing</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="w-10 h-10 mx-auto rounded-full <%= order.status === 'shipped' || order.status === 'completed' ? 'bg-green-500' : 'bg-gray-200' %> flex items-center justify-center">
+                                        <i class="fas fa-bicycle text-white"></i>
+                                    </div>
+                                    <div class="text-xs mt-1">Out for Delivery</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="w-10 h-10 mx-auto rounded-full <%= order.status === 'completed' ? 'bg-green-500' : 'bg-gray-200' %> flex items-center justify-center">
+                                        <i class="fas fa-home text-white"></i>
+                                    </div>
+                                    <div class="text-xs mt-1">Delivered</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dabbawala Information -->
+                    <div class="mb-8 bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fas fa-tiffin-box mr-2 text-yellow-500"></i>
+                            Dabbawala Delivery
+                        </h3>
+                        
+                        <% if (order.status === 'shipped' || order.status === 'completed') { %>
+                            <div class="flex items-start mb-4">
+                                <div class="w-16 h-16 rounded-full overflow-hidden bg-gray-100 mr-4 flex-shrink-0">
+                                    <img src="<%= dabbawala.image %>" alt="Dabbawala Photo" class="w-full h-full object-cover">
+                                </div>
+                                <div>
+                                    <h4 class="font-medium"><%= dabbawala.name %></h4>
+                                    <p class="text-sm text-gray-600">Dabbawala ID: <%= dabbawala.id %></p>
+                                    <p class="text-sm text-gray-600">Experience: <%= dabbawala.experience %> years</p>
+                                    <p class="text-sm mt-2">
+                                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+                                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                            <%= dabbawala.rating %> (<%=dabbawala.reviews %> deliveries)
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="ml-auto">
+                                    <button class="bg-gray-800 text-white px-3 py-1 rounded-full text-sm">
+                                        <i class="fas fa-phone mr-1"></i> Contact
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Delivery Map -->
+                            <div class="mb-4 rounded-lg overflow-hidden h-64 bg-gray-100 relative">
+                                <div id="deliveryMap" class="map-container"></div>
+                                <div class="absolute top-3 right-3 z-10 bg-white p-3 rounded-lg shadow-md">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                                        <span class="text-sm font-medium">Dabbawala on the way</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mt-1">Estimated arrival: <%= estimatedTime %></p>
+                                </div>
+                            </div>
+                            
+                            <!-- Dabbawala Network Info -->
+                            <div class="p-4 bg-gray-100 rounded-lg">
+                                <h4 class="font-medium mb-2">About Mumbai Dabbawala Network</h4>
+                                <p class="text-sm text-gray-700">
+                                    The Mumbai Dabbawala network is famous for its precise delivery system with an accuracy rate of 99.999%, earning a Six Sigma certification. 
+                                    Every day, over 5,000 dabbawalas deliver 200,000+ lunch boxes across Mumbai using a unique color-coding system.
+                                </p>
+                            </div>
+                        <% } else { %>
+                            <div class="flex flex-col items-center justify-center py-6">
+                                <img src="/images/waiting.jpg" alt="Waiting for assignment" class="w-32 h-32 mb-4">
+                                <p class="text-gray-600">Your order is being prepared. A dabbawala will be assigned soon!</p>
+                            </div>
+                        <% } %>
+                    </div>
+                    
+                    <!-- Order Items Summary -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold mb-4">Order Summary</h3>
+                        <div class="border rounded-lg overflow-hidden">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    <% order.items.forEach(item => { %>
+                                        <tr>
+                                            <td class="px-4 py-3">
+                                                <div class="flex items-center">
+                                                    <div class="h-10 w-10 flex-shrink-0">
+                                                        <img class="h-10 w-10 rounded-md object-cover" src="<%= item.image_url %>" alt="<%= item.name %>">
+                                                    </div>
+                                                    <div class="ml-4">
+                                                        <div class="text-sm font-medium text-gray-900"><%= item.name %></div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-3 text-sm text-gray-500"><%= item.quantity %></td>
+                                            <td class="px-4 py-3 text-sm text-gray-500">₹<%= item.price %></td>
+                                        </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between border-t pt-4">
+                        <div>
+                            <p class="text-sm text-gray-600">Delivery Address:</p>
+                            <p class="text-sm text-gray-800"><%= order.address || 'Not specified' %></p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-lg font-semibold">Total: ₹<%= order.total_amount %></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Demo functionality to update order status
+        const orderStatusBadge = document.querySelector('.rounded-full');
+        const progressSteps = document.querySelectorAll('.w-10.h-10');
+        const dabbawalaSection = document.querySelector('.bg-yellow-50');
+        
+        // Store initial HTML of dabbawala section when waiting
+        const waitingHTML = dabbawalaSection.innerHTML;
+        
+        // Initialize map if it exists (for shipped orders)
+        if (document.getElementById('deliveryMap')) {
+            initMap();
+        }
+        
+        function initMap() {
+            // Mumbai coordinates
+            const mumbaiCoords = [19.0760, 72.8777];
+            
+            // Create map centered on Mumbai
+            const map = L.map('deliveryMap').setView(mumbaiCoords, 13);
+            
+            // Add OpenStreetMap tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            
+            // Add a marker for the restaurant location
+            const restaurantMarker = L.marker([19.0780, 72.8808]).addTo(map);
+            restaurantMarker.bindPopup("Starting Location").openPopup();
+            
+            // Add a marker for the dabbawala's current location
+            const dabbawalaMarker = L.marker([19.0720, 72.8747]).addTo(map);
+            dabbawalaMarker.bindPopup("Dabbawala Location").openPopup();
+            
+            // Add a marker for the delivery location
+            const deliveryMarker = L.marker([19.0690, 72.8697]).addTo(map);
+            deliveryMarker.bindPopup("Delivery Location").openPopup();
+            
+            // Draw a line showing the delivery route
+            const routePoints = [
+                [19.0780, 72.8808], // Restaurant
+                [19.0720, 72.8747], // Dabbawala current location
+                [19.0690, 72.8697]  // Delivery location
+            ];
+            
+            const routeLine = L.polyline(routePoints, {color: 'red', weight: 3, opacity: 0.7}).addTo(map);
+            
+            // Fit the map to show all markers
+            const bounds = L.latLngBounds(routePoints);
+            map.fitBounds(bounds);
+            
+            // Return map instance for possible future updates
+            return map;
+        }
+        
+        // Prepare the dabbawala HTML for when assigned
+        const dabbawalaHTML = `
+            <h3 class="text-lg font-semibold mb-4 flex items-center">
+                <i class="fas fa-tiffin-box mr-2 text-yellow-500"></i>
+                Dabbawala Delivery
+            </h3>
+            <div class="flex items-start mb-4">
+                <div class="w-16 h-16 rounded-full overflow-hidden bg-gray-100 mr-4 flex-shrink-0">
+                    <img src="/images/dabbawala1.jpg" alt="Dabbawala Photo" class="w-full h-full object-cover">
+                </div>
+                <div>
+                    <h4 class="font-medium">Ramesh Gaikwad</h4>
+                    <p class="text-sm text-gray-600">Dabbawala ID: 1</p>
+                    <p class="text-sm text-gray-600">Experience: 15 years</p>
+                    <p class="text-sm mt-2">
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                            4.9 (1250 deliveries)
+                        </span>
+                    </p>
+                </div>
+                <div class="ml-auto">
+                    <button class="bg-gray-800 text-white px-3 py-1 rounded-full text-sm">
+                        <i class="fas fa-phone mr-1"></i> Contact
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Delivery Map -->
+            <div class="mb-4 rounded-lg overflow-hidden h-64 bg-gray-100 relative">
+                <div id="dynamicMap" class="map-container"></div>
+                <div class="absolute top-3 right-3 z-10 bg-white p-3 rounded-lg shadow-md">
+                    <div class="flex items-center">
+                        <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                        <span class="text-sm font-medium">Dabbawala on the way</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-1">Estimated arrival: ${new Date(new Date().getTime() + 45 * 60000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                </div>
+            </div>
+            
+            <!-- Dabbawala Network Info -->
+            <div class="p-4 bg-gray-100 rounded-lg">
+                <h4 class="font-medium mb-2">About Mumbai Dabbawala Network</h4>
+                <p class="text-sm text-gray-700">
+                    The Mumbai Dabbawala network is famous for its precise delivery system with an accuracy rate of 99.999%, earning a Six Sigma certification. 
+                    Every day, over 5,000 dabbawalas deliver 200,000+ lunch boxes across Mumbai using a unique color-coding system.
+                </p>
+            </div>
+        `;
+        
+        // After 8 seconds, move to "preparing" status
+        setTimeout(() => {
+            // Update the status badge
+            orderStatusBadge.className = 'px-3 py-1 text-sm rounded-full bg-blue-100 text-blue-800';
+            orderStatusBadge.textContent = 'Processing';
+            
+            // Update the progress steps
+            progressSteps[0].classList.remove('bg-gray-200');
+            progressSteps[0].classList.add('bg-green-500');
+            progressSteps[0].querySelector('i').classList.remove('opacity-0');
+            
+            progressSteps[1].classList.remove('bg-gray-200');
+            progressSteps[1].classList.add('bg-green-500');
+            
+            // Assign dabbawala
+            dabbawalaSection.innerHTML = dabbawalaHTML;
+            
+            // Initialize map
+            setTimeout(() => {
+                // Mumbai coordinates
+                const mumbaiCoords = [19.0760, 72.8777];
+                
+                // Create map centered on Mumbai
+                const map = L.map('dynamicMap').setView(mumbaiCoords, 13);
+                
+                // Add OpenStreetMap tile layer
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+                
+                // Add a marker for the restaurant location
+                const restaurantMarker = L.marker([19.0780, 72.8808]).addTo(map);
+                restaurantMarker.bindPopup("Restaurant Location").openPopup();
+                
+                // Add a marker for the dabbawala's current location
+                const dabbawalaMarker = L.marker([19.0720, 72.8747]).addTo(map);
+                dabbawalaMarker.bindPopup("Dabbawala Location").openPopup();
+                
+                // Add a marker for the delivery location
+                const deliveryMarker = L.marker([19.0690, 72.8697]).addTo(map);
+                deliveryMarker.bindPopup("Delivery Location").openPopup();
+                
+                // Draw a line showing the delivery route
+                const routePoints = [
+                    [19.0780, 72.8808], // Restaurant
+                    [19.0720, 72.8747], // Dabbawala current location
+                    [19.0690, 72.8697]  // Delivery location
+                ];
+                
+                const routeLine = L.polyline(routePoints, {color: 'red', weight: 3, opacity: 0.7}).addTo(map);
+                
+                // Fit the map to show all markers
+                const bounds = L.latLngBounds(routePoints);
+                map.fitBounds(bounds);
+            }, 100);  // Slight delay to ensure DOM is ready
+            
+            console.log("Order is now being prepared");
+        }, 8000);
+        
+        // After 23 seconds total (15 more seconds), move to "out for delivery" status
+        setTimeout(() => {
+            // Update the status badge
+            orderStatusBadge.className = 'px-3 py-1 text-sm rounded-full bg-purple-100 text-purple-800';
+            orderStatusBadge.textContent = 'Shipped';
+            
+            // Update the progress steps
+            progressSteps[2].classList.remove('bg-gray-200');
+            progressSteps[2].classList.add('bg-green-500');
+            
+            console.log("Order is now out for delivery");
+        }, 23000);
+    </script>
+</body>
+</html> 

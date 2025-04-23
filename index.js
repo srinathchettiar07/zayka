@@ -499,7 +499,74 @@ app.get('/checkout', ensureAuthenticated, async (req, res) => {
     }
 });
 
-// Process order
+// Order tracking route
+app.get('/order/track/:id', ensureAuthenticated, async (req, res) => {
+    try {
+        const user = await db.query("SELECT * FROM users WHERE id = $1", [req.user.id]);
+        const orderId = req.params.id;
+        
+        // Get order details
+        const orderResult = await db.query(`
+            SELECT o.*, d.name as dabbawala_name, d.image as dabbawala_image, 
+                   d.phone as dabbawala_phone, d.experience, d.rating, d.reviews
+            FROM orders o
+            LEFT JOIN dabbawalas d ON o.dabbawala_id = d.id
+            WHERE o.id = $1 AND o.user_id = $2
+        `, [orderId, req.user.id]);
+        
+        if (orderResult.rows.length === 0) {
+            return res.redirect('/orders');
+        }
+        
+        const order = orderResult.rows[0];
+        
+        // Get order items
+        const itemsResult = await db.query(`
+            SELECT oi.*, hp.name, hp.image_url 
+            FROM order_items oi
+            JOIN homemade_products hp ON oi.product_id = hp.id
+            WHERE oi.order_id = $1
+        `, [orderId]);
+        
+        // Create the final order object
+        const orderDetails = {
+            ...order,
+            items: itemsResult.rows,
+            address: "123 Main St, Mumbai, 400001" // This would come from actual order data
+        };
+        
+        // Create dabbawala object if assigned
+        let dabbawala = null;
+        if (order.dabbawala_id) {
+            dabbawala = {
+                id: order.dabbawala_id,
+                name: order.dabbawala_name,
+                image: order.dabbawala_image,
+                phone: order.dabbawala_phone,
+                experience: order.experience,
+                rating: order.rating,
+                reviews: order.reviews
+            };
+        }
+        
+        // Calculate estimated delivery time
+        const now = new Date();
+        const estimatedDelivery = new Date(now.getTime() + 45 * 60000); // 45 minutes from now
+        const estimatedTime = estimatedDelivery.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        res.render('order-tracking.ejs', {
+            user: user.rows[0],
+            order: orderDetails,
+            dabbawala: dabbawala,
+            estimatedTime: estimatedTime
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error');
+    }
+});
+
+// Process order - update the existing function
 app.post('/checkout/complete', ensureAuthenticated, async (req, res) => {
     try {
         // Start transaction
@@ -528,10 +595,17 @@ app.post('/checkout/complete', ensureAuthenticated, async (req, res) => {
         const tax = subtotal * 0.18; // 18% tax
         const total = subtotal + shipping + tax;
 
-        // Create order
+        // Get a random available dabbawala (in a real app this would use a more sophisticated assignment algorithm)
+        const dabbawalaResult = await db.query(`
+            SELECT id FROM dabbawalas WHERE available = true ORDER BY RANDOM() LIMIT 1
+        `);
+        
+        const dabbawalaId = dabbawalaResult.rows.length > 0 ? dabbawalaResult.rows[0].id : null;
+
+        // Create order with dabbawala assignment
         const orderResult = await db.query(
-            "INSERT INTO orders (user_id, total_amount, shipping_fee, tax_amount) VALUES ($1, $2, $3, $4) RETURNING *",
-            [req.user.id, total, shipping, tax]
+            "INSERT INTO orders (user_id, total_amount, shipping_fee, tax_amount, dabbawala_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+            [req.user.id, total, shipping, tax, dabbawalaId]
         );
         
         const newOrder = orderResult.rows[0];
@@ -591,6 +665,19 @@ app.get('/orders', ensureAuthenticated, async (req, res) => {
         res.render('orders.ejs', {
             user: user.rows[0],
             orders: orders
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error');
+    }
+});
+
+// Tiffin Services route
+app.get('/user/mutualfunds', ensureAuthenticated, async (req, res) => {
+    try {
+        const user = await db.query("SELECT * FROM users WHERE id = $1", [req.user.id]);
+        res.render('tiffin-services.ejs', {
+            user: user.rows[0]
         });
     } catch (error) {
         console.error(error);
