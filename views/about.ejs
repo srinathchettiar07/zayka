@@ -8,81 +8,83 @@
     <meta name="author" content="Zayka Team">
     <title>Zayka - About</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
     <style>
-        @keyframes scroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-        .scroll-content {
-            animation: scroll 60s linear infinite;
-        }
-        .scroll-content:hover {
-            animation-play-state: paused;
+        body {
+            font-family: 'Poppins', sans-serif;
         }
     </style>
 </head>
-<body class="bg-yellow-200 text-black font-sans">
-  <%- include('partials/header1.ejs') %>
-    <div class="mt-8 mx-6">
-        <h1 class="text-3xl font-bold mb-4">About Zayka</h1>
-        <p class="text-lg text-justify mb-4">At Zayka, we believe that every kitchen has a story—a story of love, heritage, and tradition passed down through generations. Zayka is more than just an app; it’s a heartfelt movement to bring homemade flavors, cultural richness, and entrepreneurial dreams to life.</p>
-
-        <p class="text-lg text-justify mb-4">Zayka is a home-made food and handicraft delivery platform designed to empower homemakers, especially women, by giving them the opportunity to share their culinary and creative talents with the world. From crispy pappads of the South, spicy pickles from Andhra, to melt-in-the-mouth laddoos from Punjab—Zayka brings the authentic taste of Indian households to your plate.</p>
-        
-        <p class="text-lg text-justify mb-4">Through Zayka, users can explore the diverse taste of India, connecting with regional cuisines and timeless recipes you won’t find in restaurants. Every dish tells a story—of a grandmother’s secret masala, a mother’s lovingly prepared snack, or a festive treat passed down through generations. It's not just food—it's emotion, culture, and comfort on a plate.</p>
+<body class="bg-white text-gray-800">
+    <%- include('partials/header1.ejs') %>
+    
+    <!-- Hero Section -->
+    <div class="bg-gradient-to-b from-amber-50 to-white py-16">
+        <div class="container mx-auto px-6 md:px-12 max-w-5xl">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6 text-amber-800">About Zayka</h1>
+            <p class="text-lg leading-relaxed mb-6">At Zayka, we believe that every kitchen has a story—a story of love, heritage, and tradition passed down through generations. Zayka is more than just an app; it's a heartfelt movement to bring homemade flavors, cultural richness, and entrepreneurial dreams to life.</p>
+        </div>
     </div>
-
-    <section class="w-full overflow-hidden py-5">
-        <div class="flex w-max gap-4 scroll-content px-6">
-            <div class="flex-none bg-red-900 text-white text-center rounded-lg p-5 text-lg transition-transform duration-300 hover:scale-110">
-                <h3 class="font-semibold mb-2">Home Chef Power</h3>
-                <p>Empowering homemakers across India to turn their passion into income.</p>
-            </div>
-            <div class="flex-none bg-red-900 text-white text-center rounded-lg p-5 text-lg transition-transform duration-300 hover:scale-110">
-                <h3 class="font-semibold mb-2">Monthly Tiffin Service</h3>
-                <p>Healthy, homemade meals delivered with love—by the legendary Mumbai Dabbawalas.</p>
-            </div>
-            <div class="flex-none bg-red-900 text-white text-center rounded-lg p-5 text-lg transition-transform duration-300 hover:scale-110">
-                <h3 class="font-semibold mb-2">Taste of India</h3>
-                <p>Explore regional cuisines and traditional recipes from every corner of India.</p>
-            </div>
-            <div class="flex-none bg-red-900 text-white text-center rounded-lg p-5 text-lg transition-transform duration-300 hover:scale-110">
-                <h3 class="font-semibold mb-2">Recipe Sharing Community</h3>
-                <p>A heartwarming space to share family recipes, cooking tips, and stories.</p>
-            </div>
-            <div class="flex-none bg-red-900 text-white text-center rounded-lg p-5 text-lg transition-transform duration-300 hover:scale-110">
-                <h3 class="font-semibold mb-2">Handmade with Love</h3>
-                <p>Every item—whether food or craft—is made with care, tradition, and soul.</p>
-            </div>
-            <div class="flex-none bg-red-900 text-white text-center rounded-lg p-5 text-lg transition-transform duration-300 hover:scale-110">
-                <h3 class="font-semibold mb-2">Support Local Women</h3>
-                <p>Shop guilt-free knowing you're uplifting home-based women entrepreneurs.</p>
-            </div>
-            <div class="flex-none bg-red-900 text-white text-center rounded-lg p-5 text-lg transition-transform duration-300 hover:scale-110">
-                <h3 class="font-semibold mb-2">Hassle-Free Delivery</h3>
-                <p>Reliable, on-time delivery straight from home kitchens to your table.</p>
-            </div>
-            <div class="flex-none bg-red-900 text-white text-center rounded-lg p-5 text-lg transition-transform duration-300 hover:scale-110">
-                <h3 class="font-semibold mb-2">Festival Specials</h3>
-                <p>Seasonal goodies and regional delicacies crafted for Indian celebrations.</p>
+    
+    <!-- Main Content -->
+    <div class="container mx-auto px-6 md:px-12 max-w-5xl py-12">
+        <div class="mb-16">
+            <p class="text-lg mb-6 leading-relaxed">Zayka is a home-made food and handicraft delivery platform designed to empower homemakers, especially women, by giving them the opportunity to share their culinary and creative talents with the world. From crispy pappads of the South, spicy pickles from Andhra, to melt-in-the-mouth laddoos from Punjab—Zayka brings the authentic taste of Indian households to your plate.</p>
+            
+            <p class="text-lg mb-6 leading-relaxed">Through Zayka, users can explore the diverse taste of India, connecting with regional cuisines and timeless recipes you won't find in restaurants. Every dish tells a story—of a grandmother's secret masala, a mother's lovingly prepared snack, or a festive treat passed down through generations. It's not just food—it's emotion, culture, and comfort on a plate.</p>
+        </div>
+        
+        <!-- Features Grid -->
+        <div class="mb-16">
+            <h2 class="text-2xl font-semibold mb-8 text-amber-800 border-b pb-2">What We Offer</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-amber-50 rounded-lg p-6 shadow-sm border border-amber-100">
+                    <h3 class="font-semibold text-xl mb-3 text-amber-800">Home Chef Power</h3>
+                    <p class="text-gray-700">Empowering homemakers across India to turn their passion into income.</p>
+                </div>
+                <div class="bg-amber-50 rounded-lg p-6 shadow-sm border border-amber-100">
+                    <h3 class="font-semibold text-xl mb-3 text-amber-800">Monthly Tiffin Service</h3>
+                    <p class="text-gray-700">Healthy, homemade meals delivered with love—by the legendary Mumbai Dabbawalas.</p>
+                </div>
+                <div class="bg-amber-50 rounded-lg p-6 shadow-sm border border-amber-100">
+                    <h3 class="font-semibold text-xl mb-3 text-amber-800">Taste of India</h3>
+                    <p class="text-gray-700">Explore regional cuisines and traditional recipes from every corner of India.</p>
+                </div>
+                <div class="bg-amber-50 rounded-lg p-6 shadow-sm border border-amber-100">
+                    <h3 class="font-semibold text-xl mb-3 text-amber-800">Recipe Sharing</h3>
+                    <p class="text-gray-700">A heartwarming space to share family recipes, cooking tips, and stories.</p>
+                </div>
+                <div class="bg-amber-50 rounded-lg p-6 shadow-sm border border-amber-100">
+                    <h3 class="font-semibold text-xl mb-3 text-amber-800">Handmade with Love</h3>
+                    <p class="text-gray-700">Every item—whether food or craft—is made with care, tradition, and soul.</p>
+                </div>
+                <div class="bg-amber-50 rounded-lg p-6 shadow-sm border border-amber-100">
+                    <h3 class="font-semibold text-xl mb-3 text-amber-800">Support Local Women</h3>
+                    <p class="text-gray-700">Shop guilt-free knowing you're uplifting home-based women entrepreneurs.</p>
+                </div>
             </div>
         </div>
-    </section>
-
-    <div class="mt-8 mx-6">
-        <p class="text-lg text-justify mb-4">Zayka also features a recipe-sharing community, where users can share and discover unique family recipes. It’s a space to celebrate the joy of cooking and preserve our culinary heritage.</p>
         
-        <p class="text-lg text-justify mb-4">A special highlight of Zayka is our Monthly Tiffin Service, where working professionals, students, and anyone missing a home-cooked meal can subscribe to healthy, balanced tiffins delivered daily. What makes it even more special? Our delivery is handled by the legendary Mumbai Dabbawalas—a symbol of efficiency, reliability, and Mumbai’s beating heart.</p>
+        <div class="mb-16">
+            <p class="text-lg mb-6 leading-relaxed">Zayka also features a recipe-sharing community, where users can share and discover unique family recipes. It's a space to celebrate the joy of cooking and preserve our culinary heritage.</p>
+            
+            <p class="text-lg mb-6 leading-relaxed">A special highlight of Zayka is our Monthly Tiffin Service, where working professionals, students, and anyone missing a home-cooked meal can subscribe to healthy, balanced tiffins delivered daily. What makes it even more special? Our delivery is handled by the legendary Mumbai Dabbawalas—a symbol of efficiency, reliability, and Mumbai's beating heart.</p>
+            
+            <p class="text-lg mb-6 leading-relaxed">Zayka is more than a business—it's a platform that uplifts women, celebrates diversity, and connects hearts through food.</p>
+        </div>
         
-        <p class="text-lg text-justify mb-4">Zayka is more than a business—it’s a platform that uplifts women, celebrates diversity, and connects hearts through food.</p>
-    </div>
-
-    <div class="mt-8 mx-6 mb-10">
-        <h1 class="text-3xl font-bold mb-4">Our Mission</h1>
-        <p class="text-lg text-justify mb-8">To empower homemakers across India by turning their culinary and creative skills into thriving ventures, while delivering authentic, home-made Indian food and handicrafts to customers craving a taste of home. We aim to celebrate tradition, support local talent, and build a vibrant community that values heritage, quality, and connection.</p>
-        
-        <h1 class="text-3xl font-bold mb-4">Our Vision</h1>
-        <p class="text-lg text-justify">To become India’s leading platform for home-based culinary and cultural experiences, where every home chef, artisan, and food lover finds a place to shine. We envision a future where homemade is celebrated, not sidelined, and where millions of home kitchens become centers of creativity, income, and joy.</p>
+        <!-- Mission and Vision -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div class="bg-amber-50 p-8 rounded-lg shadow-sm border border-amber-100">
+                <h2 class="text-2xl font-semibold mb-4 text-amber-800">Our Mission</h2>
+                <p class="leading-relaxed">To empower homemakers across India by turning their culinary and creative skills into thriving ventures, while delivering authentic, home-made Indian food and handicrafts to customers craving a taste of home.</p>
+            </div>
+            
+            <div class="bg-amber-50 p-8 rounded-lg shadow-sm border border-amber-100">
+                <h2 class="text-2xl font-semibold mb-4 text-amber-800">Our Vision</h2>
+                <p class="leading-relaxed">To become India's leading platform for home-based culinary and cultural experiences, where every home chef, artisan, and food lover finds a place to shine.</p>
+            </div>
+        </div>
     </div>
 </body>
 </html>
