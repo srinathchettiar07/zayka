@@ -98,6 +98,10 @@ app.get("/about" , (req , res)=>{
   res.render("about.ejs");
 })
 
+app.get("/features" , (req , res)=>{
+  res.render("features.ejs");
+})
+
 app.get("/register" , (req , res)=>{
     res.render("register.ejs")
 })
