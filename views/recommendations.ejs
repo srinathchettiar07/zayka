@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - Zayka</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="flex min-h-screen text-white">
+        <%- include('partials/dashboard.ejs', { user: user }) %>
+        
+        <!-- Recipe Recommendation Form -->
+        <div class="flex-1 p-8">
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white rounded-lg shadow-lg border-2 border-red-600 overflow-hidden">
+                    <div class="bg-red-600 p-6">
+                        <h2 class="text-2xl font-bold text-white text-center">Recipe Recommendation</h2>
+                        <p class="text-white text-center mt-2">Tell us what you have and how you feel, and we'll suggest the perfect dish!</p>
+                    </div>
+                    
+                    <form id="recipeForm" class="p-6 text-gray-800">
+                        <!-- Mood Section -->
+                        <div class="mb-6">
+                            <label for="mood" class="block text-lg font-medium text-red-700 mb-2">
+                                <i class="fas fa-smile mr-2"></i> Your Mood Today
+                            </label>
+                            <select id="mood" name="mood" class="w-full p-3 border border-red-300 rounded-lg focus:ring-red-500 focus:border-red-500">
+                                <option value="">Select your mood</option>
+                                <option value="happy">Happy & Energetic</option>
+                                <option value="relaxed">Relaxed & Calm</option>
+                                <option value="stressed">Stressed & Tired</option>
+                                <option value="celebratory">Celebratory</option>
+                                <option value="cozy">Cozy & Comfort-seeking</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Ingredients Section -->
+                        <div class="mb-6">
+                            <label for="ingredients" class="block text-lg font-medium text-red-700 mb-2">
+                                <i class="fas fa-carrot mr-2"></i> Ingredients You Have
+                            </label>
+                            <textarea id="ingredients" name="ingredients" rows="3" class="w-full p-3 border border-red-300 rounded-lg focus:ring-red-500 focus:border-red-500" placeholder="List ingredients separated by commas (e.g., chicken, rice, onions, bell peppers)"></textarea>
+                        </div>
+                        
+                        <!-- Serving Size & Cooking Time -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label for="servingSize" class="block text-lg font-medium text-red-700 mb-2">
+                                    <i class="fas fa-users mr-2"></i> Number of People
+                                </label>
+                                <input type="number" id="servingSize" name="servingSize" min="1" max="20" value="2" class="w-full p-3 border border-red-300 rounded-lg focus:ring-red-500 focus:border-red-500">
+                            </div>
+                            
+                            <div>
+                                <label for="cookingTime" class="block text-lg font-medium text-red-700 mb-2">
+                                    <i class="fas fa-clock mr-2"></i> Cooking Time (minutes)
+                                </label>
+                                <input type="number" id="cookingTime" name="cookingTime" min="5" max="240" value="30" class="w-full p-3 border border-red-300 rounded-lg focus:ring-red-500 focus:border-red-500">
+                            </div>
+                        </div>
+                        
+                        <!-- Dietary Preferences -->
+                        <div class="mb-6">
+                            <label class="block text-lg font-medium text-red-700 mb-2">
+                                <i class="fas fa-drumstick-bite mr-2"></i> Dietary Preference
+                            </label>
+                            <div class="flex flex-wrap gap-4">
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="dietaryPreference" value="vegetarian" class="h-5 w-5 text-red-600">
+                                    <span class="ml-2 text-gray-700">Vegetarian</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="dietaryPreference" value="vegan" class="h-5 w-5 text-red-600">
+                                    <span class="ml-2 text-gray-700">Vegan</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="dietaryPreference" value="non-vegetarian" class="h-5 w-5 text-red-600">
+                                    <span class="ml-2 text-gray-700">Non-Vegetarian</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="dietaryPreference" value="any" class="h-5 w-5 text-red-600" checked>
+                                    <span class="ml-2 text-gray-700">Any</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Allergies -->
+                        <div class="mb-6">
+                            <label for="allergies" class="block text-lg font-medium text-red-700 mb-2">
+                                <i class="fas fa-allergies mr-2"></i> Allergies or Restrictions
+                            </label>
+                            <textarea id="allergies" name="allergies" rows="2" class="w-full p-3 border border-red-300 rounded-lg focus:ring-red-500 focus:border-red-500" placeholder="List any allergies or dietary restrictions (e.g., gluten, nuts, dairy)"></textarea>
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <div class="text-center">
+                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 transform hover:scale-105">
+                                <i class="fas fa-utensils mr-2"></i> Get Recipe Recommendations
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('recipeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Collect form data
+            const formData = {
+                mood: document.getElementById('mood').value,
+                ingredients: document.getElementById('ingredients').value,
+                servingSize: document.getElementById('servingSize').value,
+                cookingTime: document.getElementById('cookingTime').value,
+                dietaryPreference: document.querySelector('input[name="dietaryPreference"]:checked').value,
+                allergies: document.getElementById('allergies').value
+            };
+            
+            // You can send this data to your server via fetch/ajax
+            console.log('Form submitted with:', formData);
+            
+            // Show success message (replace with your preferred method)
+            alert('Thank you! Your recipe recommendations are being prepared.');
+            
+            // Or redirect to results page
+            // window.location.href = '/recipe-recommendations?mood=' + formData.mood + '&...etc';
+        });
+    </script>
+</body>
+</html>

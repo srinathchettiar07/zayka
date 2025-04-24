@@ -7,6 +7,7 @@ import passport from "passport";
 import { Strategy } from "passport-local";
 import GoogleStrategy from "passport-google-oauth2";
 import session from "express-session";
+import nodemailer from 'nodemailer';
 
 const app = express();
 const port = 3000;
@@ -49,12 +50,52 @@ const time = [
   { type: "dinner", imageUrl: "/images/night.avif" }
 ];
 
+
+
+function sendMail (sender){
+        const auth = nodemailer.createTransport({
+            service: "gmail",
+            secure : true,
+            port : 465,
+            auth: {
+               user:"bigtopgun26@gmail.com",
+                pass:"hgnhcbqzkpecunlu"
+            }
+        });
+    
+        const receiver = {
+            from: "bigtopgun26@gmail.com",
+            to: sender,
+            subject: "Query received",
+            text: "Hello and thank you for sending us your query!"
+        };
+    
+        auth.sendMail(receiver, (error, emailResponse) => {
+            if(error)
+            throw error;
+            console.log("success!");
+            response.end();
+        });
+        ;
+}
+
 app.get('/',(req , res)=>{
     res.render("home.ejs")
 })
 
+app.post('/',(req ,res)=>
+{
+  const sender = req.body.email;
+  sendMail(sender);
+  res.redirect("/")
+})
+
 app.get("/login" , (req , res)=>{
     res.render("login.ejs")
+})
+
+app.get("/about" , (req , res)=>{
+  res.render("about.ejs");
 })
 
 app.get("/register" , (req , res)=>{
@@ -86,8 +127,7 @@ app.get(
   })
 );
 
-app.post(
-  "/login",
+app.post("/login",
   passport.authenticate("local", {
     successRedirect: "/user/dashboard",
     failureRedirect: "/login",
@@ -281,6 +321,15 @@ app.get('/user/spices', ensureAuthenticated, async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+
+
+app.get("/user/recommendation" ,ensureAuthenticated , async (req , res)=>{
+  const user = await db.query("SELECT * FROM users WHERE id = $1", [req.user.id]);
+  res.render('recommendations.ejs' , {
+    user:user.rows[0]
+  });
+})
+
 
 // Cart Routes
 app.get('/cart', ensureAuthenticated, async (req, res) => {
